@@ -1,7 +1,7 @@
 # Purpose : Using the border score, identify candidate boundaries in each group.
 
 #' Call Peaks
-#' 
+#'
 #' Scans across a chromosome. Calculates the mean and variance of the border
 #' score within the window [focus-h,focus+h]. Identifies foci with a
 #' standardized border score above the threshold.
@@ -31,7 +31,7 @@ callPeaks = function(foci,b,h,t){
 }
 
 #' Thin Peaks
-#' 
+#'
 #' If multiple candidate peaks are within the minimum separation distance,
 #' evaluates the border score at each, and retains the representative peak with
 #' the highest border score.
@@ -47,7 +47,7 @@ thinPeaks = function(p,b,w){
   while(flag){
     # Reduce to maximal peaks
     aux = function(y){
-      # Positions to include 
+      # Positions to include
       keep = (abs(y-peaks)<=w);
       # Maximum
       topPeak = which.max(b.p[keep]);
@@ -65,18 +65,18 @@ thinPeaks = function(p,b,w){
 }
 
 #' Candidate Differential Boundaries
-#' 
+#'
 #' Scans across each chromosome. Calculates the local mean and variance of the border
 #' score within the window [focus-h,focus+h]. Identifies foci with a border score at least
-#' \emph{t} standard deviations above the mean. If multiple foci are within distance w of 
-#' one another, the representative focus with the greatest border score is retained. 
+#' \emph{t} standard deviations above the mean. If multiple foci are within distance w of
+#' one another, the representative focus with the greatest border score is retained.
 #' @param B FS experiment produced by \code{BorderScores}.
-#' @param h Window half-width. 
+#' @param h Window half-width.
 #' @param w Minimum boundary separation.
 #' @param t Threshold local Z-score for candidate boundaries.
-#' @param parallel Run in parallel? Must register parallel backend first. 
+#' @param parallel Run in parallel? Must register parallel backend first.
 #' @return data.frame of candidate boundaries
-#' @importFrom foreach "%do%" "%:%" foreach registerDoSEQ
+#' @importFrom foreach %do% %:% foreach registerDoSEQ
 #' @export
 
 callBoundaries = function(B,h,w=10,t=2,parallel=F){
@@ -88,7 +88,7 @@ callBoundaries = function(B,h,w=10,t=2,parallel=F){
   nc = length(B@chrs);
   # Loop over groups
   i = j = NULL;
-  Out = foreach(i=1:ng,.combine=rbind) %:% 
+  Out = foreach(i=1:ng,.combine=rbind) %:%
     foreach(j=1:nc,.combine=rbind) %dopar% {
       # Subset chromosome
       C = B@Data[[B@chrs[j]]];
@@ -107,7 +107,7 @@ callBoundaries = function(B,h,w=10,t=2,parallel=F){
       if(length(Peaks)>0){
         Peaks = thinPeaks(p=Peaks,b=border[foci %in% Peaks],w=w);
         Peaks = data.frame("Chr"=B@chrs[j],"Group"=B@groups[i],
-                           "Focus"=Peaks,Stats[foci %in% Peaks,]); 
+                           "Focus"=Peaks,Stats[foci %in% Peaks,]);
       } else {Peaks = NULL};
       # Output
       return(Peaks);

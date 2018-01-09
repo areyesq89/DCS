@@ -4,20 +4,20 @@ NULL
 # Purpose : Functions to convert sparse HiC objects into DCS objects
 
 #' Sparse Matrix to DCS Chromosome
-#' 
+#'
 #' @param A Sparse matrix of class dtCMatrix
 #' @param chr Chromosome
 #' @param smp Sample name
 #' @param group Group name
 #' @return A contact matrix of class \code{DCSchr}.
-#' 
+#'
 #' @importClassesFrom Matrix dtCMatrix
 #' @importFrom Matrix summary t
 #' @importFrom methods new
 
 sparseMat2DCS = function(A,chr,smp,group){
   # Check class
-  if(!(class(A) %in% c("dtCMatrix","dtTMatrix"))){stop("Expecting a sparse matrix.")};  
+  if(!(class(A) %in% c("dtCMatrix","dtTMatrix"))){stop("Expecting a sparse matrix.")};
   # Convert to data frame
   B = summary(t(A));
   # Coord frame
@@ -34,19 +34,19 @@ sparseMat2DCS = function(A,chr,smp,group){
 }
 
 #' Convert List of Sparse Matrices to a DCS Experiment
-#' 
+#'
 #' @param L List of sparse matrices
 #' @param chr Vector of chromosome names, one per sparse matrix
 #' @param smp Optional sample name
 #' @param group Optional group assignment
 #' @return An object of class \code{DCSexp}.
-#' 
-#' @importFrom foreach "%do%" foreach
+#'
+#' @importFrom foreach %do% foreach
 #' @importFrom methods new
-#' @export 
-#' 
-#' @examples 
-#' # Auxin 
+#' @export
+#'
+#' @examples
+#' # Auxin
 #' A1 = DCS::Auxin_rep1;
 #' A2 = DCS::Auxin_rep2;
 #' # Combine sparse matrices for individual chromosomes within a sample
@@ -70,18 +70,18 @@ createDCSsmp = function(L,chr,smp,group){
 }
 
 #' Combine Multiple Samples into a DCS Experiment
-#' 
+#'
 #' @param L List of DCSexp objects corresponding to different samples
 #' @param smps Sample names, required if not already assigned to component samples
 #' @param groups Optional group assignments
 #' @return An object of class \code{DCSexp}.
-#' 
-#' @importFrom foreach "%do%" foreach
+#'
+#' @importFrom foreach %do% foreach
 #' @importFrom methods new
 #' @export
-#' 
+#'
 #' @examples
-#' # Auxin 
+#' # Auxin
 #' A1 = DCS::Auxin_rep1;
 #' A2 = DCS::Auxin_rep2;
 #' # Control

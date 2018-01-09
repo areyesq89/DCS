@@ -3,7 +3,7 @@
 ########################
 
 #' Diagonal Means
-#' 
+#'
 #' Calculate the mean intensity across samples for each pixel separation
 #' \emph{d}.
 #' @param A DCS chromosome.
@@ -27,16 +27,16 @@ diagMeans = function(A){
 }
 
 #' Scale Factor Estimation
-#' 
+#'
 #' Function to calculate separation based scale factors. In particular, the scale factor
 #' for the \emph{i}th sample is calcuate as the mean across samples at separation \emph{d}, \eqn{m(d)},
-#' divided by the mean in sample \emph{i} at separation \emph{d}, \eqn{m_{i}(d)}. 
+#' divided by the mean in sample \emph{i} at separation \emph{d}, \eqn{m_{i}(d)}.
 #' @param X HiC experiment
-#' @param parallel Run in parallel? Must register parallel backend first. 
-#' 
-#' @importFrom foreach "%do%" foreach
+#' @param parallel Run in parallel? Must register parallel backend first.
+#'
+#' @importFrom foreach %do% foreach
 #' @importFrom stats aggregate
-#' @export 
+#' @export
 
 scaleFactors = function(X,parallel=F){
   # Samples
@@ -71,7 +71,7 @@ scaleFactors = function(X,parallel=F){
 }
 
 #' Rescale Intensities
-#' 
+#'
 #' Rescales the observed HiC intensities along the diagonals of the contact matrix.
 #' @param A DCS chromosome.
 #' @param S Matrix of scale factors
@@ -96,11 +96,11 @@ diagScale = function(A,S){
 }
 
 #' Normalize HiC Samples
-#' 
-#' Normalizes a HiC experiment s.t. all samples have the same mean pixel intensity at each 
-#' possible pixel separation \eqn{d\in\{1,\cdots,d_{\max}\}}. 
+#'
+#' Normalizes a HiC experiment s.t. all samples have the same mean pixel intensity at each
+#' possible pixel separation \eqn{d\in\{1,\cdots,d_{\max}\}}.
 #' @param X HiC experiment.
-#' @param parallel Run in parallel? Must register parallel backend first. 
+#' @param parallel Run in parallel? Must register parallel backend first.
 #' @export
 
 diagNormalize = function(X,parallel=F){
@@ -116,14 +116,14 @@ diagNormalize = function(X,parallel=F){
 ########################
 
 #' Plot HiC Normalization Curves
-#' 
+#'
 #' Plots mean signal intensity by pixel separation before and after
-#' HiC normalization. 
-#' 
+#' HiC normalization.
+#'
 #' @param X Initial HiC experiment.
 #' @param Z HiC Experiment after Normalization.
-#' @param parallel Run in parallel? Must register parallel backend first. 
-#' 
+#' @param parallel Run in parallel? Must register parallel backend first.
+#'
 #' @import ggplot2
 #' @importFrom cowplot plot_grid
 #' @importFrom stats aggregate
@@ -136,7 +136,7 @@ plotNormCurves = function(X,Z,parallel=F){
   d = Sample = y = NULL;
   Z.0 = aggregate(y ~ Sample + d, data=Z.0, FUN=mean);
   Z.0$d = as.numeric(as.character(Z.0$d));
-  
+
   q = ggplot(data=Z.0,aes(x=d,y=y,color=Sample)) + geom_line() +
     geom_point(size=1.5);
   q = q + theme_bw() + labs("x"="Distance between Loci",y="Mean Signal");
@@ -146,13 +146,13 @@ plotNormCurves = function(X,Z,parallel=F){
   q = q + scale_y_continuous(breaks=b,labels=round(b,digits=2),trans="log2",limits=c(1,max(b)));
   q = q + theme(axis.title=element_text(size=12),title=element_text(size=14))
   q1 = q + ggtitle("Before Normalization");
-  
+
   # After normalization
   Z.1 = apply.DCSexp(X=Z,f=diagMeans,exp.out=F,parallel=parallel);
   Z.1 = do.call(rbind,Z.1);
   Z.1 = aggregate(y ~ Sample + d, data=Z.1, FUN=mean);
   Z.1$d = as.numeric(as.character(Z.1$d));
-  
+
   q = ggplot(data=Z.1,aes(x=d,y=y,color=Sample)) + geom_line() +
     geom_point(size=1.5);
   q = q + theme_bw() + labs("x"="Distance between Loci",y="Mean Signal");

@@ -105,14 +105,14 @@ checkFSexp = function(object){
 # Class definitions
 
 #' DCS Chromosome
-#' 
+#'
 #' DCS object for storing chromosome level data.
 #' @slot chr Chromosome, character.
 #' @slot Coord Matrix of pixel coordinates.
 #' @slot Counts Matrix of pixel intensities.
 #' @slot groups Group assignments, factor.
 #' @slot samples Sample names, character.
-#' @slot Stats Statistics available for each pixel, data.frame. 
+#' @slot Stats Statistics available for each pixel, data.frame.
 #' @name DCSchr-class
 #' @rdname DCSchr-class
 #' @exportClass DCSchr
@@ -120,8 +120,8 @@ setClass(Class="DCSchr",representation=representation(chr="character",Coord="mat
                                  groups ="factor",samples="character",Stats="data.frame"),validity=checkDCSchr);
 
 #' DCS Experiment
-#' 
-#' DCS object for storing experiment level data. 
+#'
+#' DCS object for storing experiment level data.
 #' @slot chrs Chromosomes in experiment, character.
 #' @slot Data List of DCSchrs.
 #' @slot groups Group assignments, factor.
@@ -133,23 +133,23 @@ setClass(Class="DCSexp",representation=representation(chrs="character",Data="lis
          validity=checkDCSexp);
 
 #' FS Chromosome
-#' 
+#'
 #' Object for storing focal statistics (FS) at the chromosome level.
 #' @slot chr Chromosome, character.
 #' @slot foci Foci, or loci along the diagonal of the contact matrix, for which statistics are available.
 #' @slot groups Group assignments, factor.
-#' @slot Stats List of statistics, one per group. 
+#' @slot Stats List of statistics, one per group.
 #' @name FSchr-class
 #' @rdname FSchr-class
 #' @exportClass FSchr
 setClass(Class="FSchr",representation=representation(chr="character",foci="numeric",groups="factor",Stats="list"),validity=checkFSchr);
 
 #' FS Experiment
-#' 
+#'
 #' Object for storing focal statistics (FS) at the experiment level.
 #' @slot chrs Chromosomes, character.
 #' @slot groups Group assignments, factor.
-#' @slot Data List of FSchrs. 
+#' @slot Data List of FSchrs.
 #' @name FSexp-class
 #' @rdname FSexp-class
 #' @exportClass FSexp
@@ -160,20 +160,20 @@ setClass(Class="FSexp",representation=representation(chrs="character",groups="fa
 ########################
 
 #' Apply to DCS Experiment
-#' 
+#'
 #' @param X A \code{DCSexp} object.
-#' @param f Function to apply to each chromosome in \code{DCSexp@Data}. Should 
+#' @param f Function to apply to each chromosome in \code{DCSexp@Data}. Should
 #'   accept objects of class \code{DCSchr}.
-#' @param exp.out Is the output an object of class \code{DCSexp}? Default is 
+#' @param exp.out Is the output an object of class \code{DCSexp}? Default is
 #'   TRUE.
-#' @param parallel Run in parallel? Must register parallel backend first. 
+#' @param parallel Run in parallel? Must register parallel backend first.
 #'   Default is FALSE.
 #' @param ... Additional arguments for f.
 #' @return List resulting from application of function f to the chromosomes in
 #'   \code{DCSexp@Data}. If \code{exp.out=T}, the list is formatted as a
 #'   \code{DCSchr}.
-#'   
-#' @importFrom foreach "%dopar%" foreach registerDoSEQ
+#'
+#' @importFrom foreach %dopar% foreach registerDoSEQ
 #' @export
 
 apply.DCSexp = function(X,f,exp.out=T,parallel=F,...){
@@ -207,20 +207,20 @@ apply.DCSexp = function(X,f,exp.out=T,parallel=F,...){
 };
 
 #' Apply to FS Experiment
-#' 
+#'
 #' @param X A \code{FSexp} object.
-#' @param f Function to apply to each chromosome in \code{FSexp@Data}. Should 
+#' @param f Function to apply to each chromosome in \code{FSexp@Data}. Should
 #'   accept objects of class \code{FSchr}.
-#' @param exp.out Is the output an object of class \code{FSexp}? Default is 
+#' @param exp.out Is the output an object of class \code{FSexp}? Default is
 #'   TRUE.
-#' @param parallel Run in parallel? Must register parallel backend first. 
+#' @param parallel Run in parallel? Must register parallel backend first.
 #'   Default is FALSE.
 #' @param ... Additional arguments for f.
 #' @return List resulting from application of function f to the chromosomes in
 #'   \code{FSexp@Data}. If \code{exp.out=T}, the list is formatted as a
 #'   \code{FSchr}.
-#' 
-#' @importFrom foreach "%dopar%" foreach registerDoSEQ
+#'
+#' @importFrom foreach %dopar% foreach registerDoSEQ
 #' @export
 
 apply.FSexp = function(X,f,exp.out=T,parallel=F,...){
@@ -258,17 +258,17 @@ apply.FSexp = function(X,f,exp.out=T,parallel=F,...){
 ########################
 
 #' subset.DCSchr
-#' 
+#'
 #' Allows subsetting of a DCSchr either using a logical vector, or a maximal
 #' allowed pixel separation.
-#' 
+#'
 #' @param x A \code{DCSchr} object.
 #' @param ... Unused.
 #' @param pix Retain pixels indicated, logical vector.
 #' @param dmax Retain pixels with separation not exceeding dmax, numeric.
-#' 
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' # Subset pixels on chromosome 1 with maximal separation 10
 #' subset(x=DCS::Z@Data[["1"]],dmax=10);
@@ -285,7 +285,7 @@ subset.DCSchr = function(x,...,pix,dmax){
     rownames(A@Counts) = NULL;
     A@Stats = A@Stats[pix,];
     rownames(A@Stats) = NULL;
-  } 
+  }
   if(!missing(dmax)){
     if(!is.numeric(dmax)){stop("dmax must have class numeric.")};
     pix = (A@Coord[,"d"]<=dmax);
@@ -300,24 +300,24 @@ subset.DCSchr = function(x,...,pix,dmax){
 };
 
 #' subset.DCSexp
-#' 
+#'
 #' Allows subsetting of a DCSexp by chromosome and/or maximal pixel separation.
-#' 
-#' @param x A \code{DCSexp} object. 
+#'
+#' @param x A \code{DCSexp} object.
 #' @param ... Unused.
 #' @param chrs Chromosomes to retain, character.
 #' @param dmax Maximal pixel separation, numeric.
-#' 
-#' @export 
-#' 
-#' @examples 
+#'
+#' @export
+#'
+#' @examples
 #' # Subset pixels on chromosome 1 with maximal separation 10
 #' subset(x=DCS::Z,chrs="1",dmax=10);
 
 subset.DCSexp = function(x,...,chrs,dmax){
   X = x;
   if(missing(chrs)){chrs = X@chrs};
-  # Subset chromosomes 
+  # Subset chromosomes
   X@Data = subset(X@Data,names(X@Data) %in% chrs);
   X@chrs = names(X@Data);
   if(!missing(dmax)){
@@ -329,15 +329,15 @@ subset.DCSexp = function(x,...,chrs,dmax){
 };
 
 #' subset.FSchr
-#' 
+#'
 #' Allows subsetting an FSchr using a logical vector and/or the group assignment.
-#' 
+#'
 #' @param x An \code{FSchr} object.
 #' @param ... Unused
 #' @param foci Foci to reain, logical vector.
 #' @param groups Groups to retain, character or factor.
-#' 
-#' @export 
+#'
+#' @export
 subset.FSchr = function(x,...,foci,groups){
   B = x;
   if(!missing(foci)){
@@ -355,19 +355,19 @@ subset.FSchr = function(x,...,foci,groups){
 };
 
 #' subset.FSexp
-#' 
+#'
 #' Allows subsetting an FSexp by chromosome and/or group.
-#' 
+#'
 #' @param x FSexp.
 #' @param ... Unused.
 #' @param chrs Chromosomes to retain, character.
 #' @param groups Groups to retain, character or factor.
-#' 
-#' @export 
+#'
+#' @export
 subset.FSexp = function(x,...,chrs,groups){
   X = x;
   if(!missing(chrs)){
-    # Subset chromosomes 
+    # Subset chromosomes
     X@Data = subset(X@Data,names(X@Data) %in% chrs);
     X@chrs = chrs;
   }
@@ -383,13 +383,13 @@ subset.FSexp = function(x,...,chrs,groups){
 ########################
 
 #' print.DCSchr
-#' 
+#'
 #' @param x A \code{DCSchr} object.
 #' @param ... Unused.
-#' @param n Number of observations to print. 
-#' 
+#' @param n Number of observations to print.
+#'
 #' @importFrom utils head
-#' @export 
+#' @export
 
 print.DCSchr = function(x,...,n=6){
   A = x;
@@ -405,12 +405,12 @@ print.DCSchr = function(x,...,n=6){
 }
 
 #' print.DCSexp
-#' 
+#'
 #' @param x A \code{DCSexp} object.
 #' @param ... Unused.
 #' @param n Number of observations to print.
-#' @param chrs Chromosomes to print, character. 
-#' 
+#' @param chrs Chromosomes to print, character.
+#'
 #' @export
 
 print.DCSexp = function(x,...,n=6,chrs){
@@ -427,13 +427,13 @@ print.DCSexp = function(x,...,n=6,chrs){
 };
 
 #' print.FSchr
-#' 
+#'
 #' @param x An \code{FSchr} object.
 #' @param ... Unused.
 #' @param n Number of observations to print.
-#' 
+#'
 #' @importFrom plyr llply
-#' @export 
+#' @export
 
 print.FSchr = function(x,...,n=6){
   B = x;
@@ -451,12 +451,12 @@ print.FSchr = function(x,...,n=6){
 };
 
 #' print.FSexp
-#' 
+#'
 #' @param x An \code{FSexp} object.
 #' @param ... Unused.
-#' @param chrs Chromosomes to print, character. 
+#' @param chrs Chromosomes to print, character.
 #' @param n Number of observations to print.
-#' 
+#'
 #' @export
 print.FSexp = function(x,...,chrs,n=6){
   X = x;
@@ -476,7 +476,7 @@ print.FSexp = function(x,...,chrs,n=6){
 ########################
 
 #' Extract Data from DCSchr
-#' 
+#'
 #' Extracts the coordinates, counts, and stats from a DCS chromosome
 #' @param M A \code{DCSchr} object.
 
@@ -489,15 +489,15 @@ extractData = function(M){
 }
 
 #' merge.DCSchr
-#' 
-#' @param x A \code{DCSchr}. 
+#'
+#' @param x A \code{DCSchr}.
 #' @param y Another \code{DCSchr}.
 #' @param ... Unused.
-#' 
+#'
 #' @return A \code{DCSchr}.
-#' 
+#'
 #' @importFrom methods new
-#' @export 
+#' @export
 
 merge.DCSchr = function(x,y,...){
   # Check chromosomes match
@@ -516,7 +516,7 @@ merge.DCSchr = function(x,y,...){
   smps = sort(smps);
   # Extract data
   A = extractData(x);
-  B = extractData(y);  
+  B = extractData(y);
   # Merge
   C = merge(x=A,y=B,all=T,by=c("i","j","d"));
   C = C[order(C$i,C$j),];
@@ -563,42 +563,42 @@ setMethod(f="show",signature=c(object="FSexp"),definition=function(object){print
 ########################
 
 #' head.DCSchr
-#' 
+#'
 #' @param x A \code{DCSchr} object.
 #' @param ... Unused.
 #' @param n Number of observations to print.
-#' 
-#' @export 
+#'
+#' @export
 
 head.DCSchr = function(x,...,n=6){print.DCSchr(x=x,n=n)};
 
 #' head.DCSexp
-#' 
+#'
 #' @param x A \code{DCSexp} object.
 #' @param ... Unused.
 #' @param n Number of observations to print.
-#' 
-#' @export 
+#'
+#' @export
 
 head.DCSexp = function(x,...,n=6){print.DCSexp(x=x,n=n)};
 
 #' head.FSchr
-#' 
+#'
 #' @param x An \code{FSchr} object.
 #' @param ... Unused.
 #' @param n Number of observations to print.
-#' 
-#' @export 
+#'
+#' @export
 
 head.FSchr = function(x,...,n=6){print.FSchr(x=x,n=n)};
 
 #' head.FSexp
-#' 
+#'
 #' @param x An \code{FSexp} object.
 #' @param ... Unused.
 #' @param n Number of observations to print.
-#' 
-#' @export 
+#'
+#' @export
 
 head.FSexp = function(x,...,n=6){print.FSexp(x=x,n=n)};
 
@@ -607,11 +607,11 @@ head.FSexp = function(x,...,n=6){print.FSexp(x=x,n=n)};
 ########################
 
 #' dim.DCSchr
-#' 
+#'
 #' @param x A \code{DCSchr} object.
-#' 
+#'
 #' @return Numeric vector, with (number of pixels, number of samples).
-#' 
+#'
 #' @export
 
 dim.DCSchr = function(x){
@@ -620,13 +620,13 @@ dim.DCSchr = function(x){
 };
 
 #' dim.DCSexp
-#' 
+#'
 #' @param x A \code{DCSexp} object.
-#' 
+#'
 #' @return A data.frame, with (chromosome, pixels, max pixel separation).
-#' 
+#'
 #' @importFrom plyr llply
-#' @export 
+#' @export
 
 dim.DCSexp = function(x){
   X = x;
@@ -641,11 +641,11 @@ dim.DCSexp = function(x){
 };
 
 #' dim.FSchr
-#' 
+#'
 #' @param x An \code{FSchr} object.
-#' 
+#'
 #' @return A numeric vector, with (number of foci).
-#' 
+#'
 #' @export
 
 dim.FSchr = function(x){
@@ -654,14 +654,14 @@ dim.FSchr = function(x){
 };
 
 #' dim.FSexp
-#' 
+#'
 #' @param x A \code{FSexp} object.
-#' 
+#'
 #' @return A data.frame, with (chromosomes, number of foci).
-#' 
+#'
 #' @importFrom plyr llply
 #' @export
- 
+
 dim.FSexp = function(x){
   X = x;
   A = do.call(rbind,plyr::llply(.data=X@Data,.fun=dim.FSchr));
@@ -676,12 +676,12 @@ dim.FSexp = function(x){
 ########################
 
 #' as.data.frame.DCSchr
-#' 
+#'
 #' @param x A \code{DCSchr} object.
 #' @param row.names Unused.
 #' @param optional Unused.
 #' @param ... Unused.
-#' 
+#'
 #' @export
 
 as.data.frame.DCSchr = function(x,row.names,optional,...){
@@ -692,14 +692,14 @@ as.data.frame.DCSchr = function(x,row.names,optional,...){
 };
 
 #' as.data.frame.DCSexp
-#' 
+#'
 #' @param x A \code{DCSexp} object.
 #' @param row.names Unused.
 #' @param optional Unused.
 #' @param ... Unused.
-#'  
-#' @importFrom foreach "%do%" foreach
-#' @export 
+#'
+#' @importFrom foreach %do% foreach
+#' @export
 
 as.data.frame.DCSexp = function(x,row.names,optional,...){
   X = x;
@@ -712,13 +712,13 @@ as.data.frame.DCSexp = function(x,row.names,optional,...){
 };
 
 #' as.data.frame.FSchr
-#' 
+#'
 #' @param x An \code{FSchr} object.
 #' @param row.names Unused.
 #' @param optional Unused.
 #' @param ... Unused.
-#' 
-#' @importFrom foreach "%do%" foreach
+#'
+#' @importFrom foreach %do% foreach
 #' @export
 
 as.data.frame.FSchr = function(x,row.names,optional,...){
@@ -732,13 +732,13 @@ as.data.frame.FSchr = function(x,row.names,optional,...){
 };
 
 #' as.data.frame.FSexp
-#' 
-#' @param x An \code{FSexp} object. 
+#'
+#' @param x An \code{FSexp} object.
 #' @param row.names Unused.
 #' @param optional Unused.
 #' @param ... Unused.
-#'  
-#' @importFrom foreach "%do%" foreach
+#'
+#' @importFrom foreach %do% foreach
 #' @export
 
 as.data.frame.FSexp = function(x,row.names,optional,...){
@@ -756,12 +756,12 @@ as.data.frame.FSexp = function(x,row.names,optional,...){
 ########################
 
 #' summary.DCSexp
-#' 
+#'
 #' @param object A \code{DCSexp} object.
 #' @param ... Unused.
-#' @return A list containing 1. the dimensions of each chromosome in the 
+#' @return A list containing 1. the dimensions of each chromosome in the
 #'   experiment, and 2. the group assignments.
-#'   
+#'
 #' @export
 
 summary.DCSexp = function(object,...){

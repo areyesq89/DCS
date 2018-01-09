@@ -1,5 +1,5 @@
 ########################
-# 1.Impute Missing Pixels to Zero 
+# 1.Impute Missing Pixels to Zero
 ########################
 
 #' Coordinates of Matrix Diagonals
@@ -25,7 +25,7 @@ genDiag = function(a,b,d){
 }
 
 #' Coordinates of Missing Pixels
-#' 
+#'
 #' Enumerates coordinates of pixels NOT present in the data.
 #' @param Coords Matrix of pixel coordinates
 
@@ -40,7 +40,7 @@ missedCoord = function(Coords){
 }
 
 #' Impute Missing Pixels
-#' 
+#'
 #' @param Counts Matrix of pixel intensities
 #' @param Coords Matrix of pixel coordinates
 
@@ -65,7 +65,7 @@ impute = function(Counts,Coords){
 }
 
 #' Wrapper for Imputing Missing Pixels
-#' 
+#'
 #' @param A DCSchr
 
 imputeWrap = function(A){
@@ -89,13 +89,13 @@ imputeWrap = function(A){
 }
 
 ########################
-# 2. Remove Empty Foci 
+# 2. Remove Empty Foci
 ########################
 
 #' Remove Pixels Corresponding to Empty Foci
-#' 
+#'
 #' @param A Chromosome level data
-#' @importFrom plyr aaply 
+#' @importFrom plyr aaply
 
 pruneEmpty = function(A){
   # Combine Counts and Coords
@@ -128,10 +128,10 @@ pruneEmpty = function(A){
 ########################
 
 #' Wrapper Function for Pre-processing
-#' 
+#'
 #' @param A Chromosome level data
 #' @param miss Impute missing pixels to zeros?
-#' @param zero Remove pixels corresponding to empty foci? 
+#' @param zero Remove pixels corresponding to empty foci?
 
 wrapPP = function(A,miss=T,zero=T){
   # Output
@@ -147,8 +147,8 @@ wrapPP = function(A,miss=T,zero=T){
 #'
 #' @param X HiC experiment.
 #' @param miss Impute missing pixels to zeros?
-#' @param zero Remove pixels corresponding to empty foci? 
-#' @param parallel Run in parallel? Must register parallel backend first.  
+#' @param zero Remove pixels corresponding to empty foci?
+#' @param parallel Run in parallel? Must register parallel backend first.
 #' @export
 
 preProcess = function(X,miss=T,zero=T,parallel=F){
@@ -161,10 +161,10 @@ preProcess = function(X,miss=T,zero=T,parallel=F){
 ########################
 
 #' Calculate log2 Fold Change
-#' 
+#'
 #' @param Counts Pixel intensities
 #' @param g Sample group assignments
-#' @importFrom foreach "%do%" foreach
+#' @importFrom foreach %do% foreach
 
 calcLFC = function(Counts,g){
   # Group levels
@@ -200,12 +200,12 @@ calcLFC = function(Counts,g){
 }
 
 #' Filter on Log Fold Change
-#' 
+#'
 #' @param A Chromosome level data
-#' @param aT Absolute threshold 
+#' @param aT Absolute threshold
 #' @param qT Quantile threshold
 #' @importFrom stats quantile
-#' @importFrom foreach "%do%" foreach
+#' @importFrom foreach %do% foreach
 
 # Function to filter based on log fold change
 wrapLfcFilter = function(A,aT,qT){
@@ -229,7 +229,7 @@ wrapLfcFilter = function(A,aT,qT){
   # Foci to keep
   i = j = NULL;
   Remove = foreach(i=1:ncol(tau),.combine=cbind) %do% {
-    # Subset 
+    # Subset
     tau.sub = tau[,i];
     LFC.sub = LFC[,i];
     # Removal indicator
@@ -257,10 +257,10 @@ wrapLfcFilter = function(A,aT,qT){
 
 #' Filter Based on Log Fold Change Relative to Reference Group
 #'
-#' @param X A \code{DCSexp} object. 
+#' @param X A \code{DCSexp} object.
 #' @param aT Absolute LFC threshold
 #' @param qT Quantile for LFC thresholding
-#' @param parallel Run in parallel? Must register parallel backend first. 
+#' @param parallel Run in parallel? Must register parallel backend first.
 #' @export
 
 filterLFC = function(X,aT,qT,parallel=F){
@@ -276,16 +276,16 @@ addLfcWrap = function(A){
   # Store LFC stat
   l = nrow(A@Stats);
   if(l==0){A@Stats = data.frame("lfc"=LFC)
-    } else if(l>0){A@Stats = cbind(A@Stats,"lfc"=LFC)}; 
+    } else if(l>0){A@Stats = cbind(A@Stats,"lfc"=LFC)};
   # Output
   return(A);
 }
 
 #' Add Log Fold Change Relative to Reference Group
 #'
-#' Note: Add LFC after normalization. 
+#' Note: Add LFC after normalization.
 #' @param X A \code{DCSexp} object.
-#' @param parallel Run in parallel? Must register parallel backend first. 
+#' @param parallel Run in parallel? Must register parallel backend first.
 #' @export
 
 addLFC = function(X,parallel=F){

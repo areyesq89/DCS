@@ -28,4 +28,5 @@ Collate:
     'Normalization.R'
     'Preprocessing.R'
     'Segmentation.R'
+    'Utilities.R'
     'Visualization.R'

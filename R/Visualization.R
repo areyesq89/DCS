@@ -3,7 +3,7 @@
 ########################
 
 #' Matrix Exclusion
-#' 
+#'
 #' Find all rows in matrix A NOT in matrix B
 #' @param A First matrix.
 #' @param B Second matrix.
@@ -19,13 +19,13 @@ mExclusion = function(A,B){
 }
 
 #' Heatmap Pixel Coords
-#' 
-#' Given a sequence of foci, enumerates coordinates of all pixels included in 
+#'
+#' Given a sequence of foci, enumerates coordinates of all pixels included in
 #' the heatmap.
 #' @param s Sequence of foci.
 #' @return Data.frame containing pixel coordinates (i,j) and a unique identifier in
 #'   the form (1+i-min(i),1+j-min(i)).
-#'   
+#'
 #' @importFrom plyr llply
 #' @importFrom data.table data.table setkey
 
@@ -58,7 +58,7 @@ Pixels = function(s){
 }
 
 #' X-Coord of Pixel Vertices
-#' 
+#'
 #' Starting from the left-most vertex and proceeding counter-clockwise,
 #' enumerates the x-coordinates of a pixel's vertices.
 #' @param r Pixel coords (i,j);
@@ -74,7 +74,7 @@ polyX = function(r){
 }
 
 #' Y-Coord of Pixel Vertices
-#' 
+#'
 #' Starting from the left-most vertex and proceeding counter-clockwise,
 #' enumerates the y-coordinates of a pixel's vertices.
 #' @param r Pixel coords (i,j);
@@ -89,20 +89,20 @@ polyY = function(r){
 }
 
 #' Enumerate polygon vertices
-#' 
+#'
 #' Given the base height and flank, enumerates the vertices of pixels that are
 #' connected to form the heatmap.
-#' 
+#'
 #' @param h.u Length of upstream domain in pixels
 #' @param h.d Length of downstream domain in pixels
 #' @param l.u Length of upstream flank in pixels
 #' @param l.d Length of downstream flank in pixels
-#' @return List containing 1. the polygon centers, and 2. the polygon vertices. 
+#' @return List containing 1. the polygon centers, and 2. the polygon vertices.
 #'   \code{Centers} is a data.frame containing (x,y) coordinates of the pixel
 #'   centers and the pixel id. \code{Vertices} is a data.frame containing (x,y)
 #'   coordinates of the pixel vertices, the pixel id, and the order in which
 #'   vertices are connected.
-#'   
+#'
 #' @importFrom data.table data.table setkey
 
 polyCoord = function(h.u,h.d,l.u,l.d){
@@ -110,7 +110,7 @@ polyCoord = function(h.u,h.d,l.u,l.d){
   U = h.u + l.u;
   # Length of downstream domain in pixels
   D = h.d + l.d;
-  # Enumerate pixels 
+  # Enumerate pixels
   P = Pixels(seq(from=1,to=U+1+D));
   id = c(P[,c("id")])[[1]];
   id = factor(id,levels=id,ordered=T);
@@ -134,7 +134,7 @@ polyCoord = function(h.u,h.d,l.u,l.d){
 }
 
 #' ggplot HiC Heatmap
-#' 
+#'
 #' Contains the ggplot commands for creating the HiC heatmap.
 #' @param df Plotting frame
 #' @param Foci Sequence of foci plotted
@@ -165,7 +165,7 @@ ggHiC = function(df,Foci,h.u,h.d,l.u){
   # Demarcate domains
   q = q + geom_abline(intercept=-2*l.u,slope=2,linetype="dashed",color="black",alpha=0.8,size=1.2);
   q = q + geom_abline(intercept=2*(h.u+l.u+1+h.d),slope=-2,linetype="dashed",color="black",alpha=0.8,size=1.2);
-  return(q); 
+  return(q);
 }
 
 ########################
@@ -173,18 +173,18 @@ ggHiC = function(df,Foci,h.u,h.d,l.u){
 ########################
 
 #' Basic HiC Plot
-#' 
+#'
 #' Creates a HiC heatmap displaying the value of the test statistic in each pixel.
-#' 
+#'
 #' @param B Data.table in the format (i,j,Signal).
 #' @param f Plot focus, numeric.
 #' @param h.u Length of upstream domain in pixels
 #' @param h.d Length of downstream domain in pixels
 #' @param l.u Lenght of upstream flank in pixels
 #' @param l.d Length of downstream flank in pixels
-#' @return List containing 1. the ggplot, 2. the minimal signal observed in the 
+#' @return List containing 1. the ggplot, 2. the minimal signal observed in the
 #'   plotting region, and 3. the maximal signal in the plotting region.
-#'   
+#'
 #' @import ggplot2
 
 basicHicPlot = function(B,f,h.u,h.d,l.u,l.d){
@@ -224,7 +224,7 @@ basicHicPlot = function(B,f,h.u,h.d,l.u,l.d){
 ########################
 
 #' Smooth Signal
-#' 
+#'
 #' Smooths the signal against pixel separation. If there are
 #' fewer than 10 observations, a simple mean is taken. If between 10 and 20
 #' observations, linear loess is applied. If greater than 20 observations,
@@ -232,7 +232,7 @@ basicHicPlot = function(B,f,h.u,h.d,l.u,l.d){
 #' @param X Data table of the form (i,j,Signal)
 #' @return Data table including the coordinates, original signal, pixel
 #'   separation, and fitted values
-#'   
+#'
 #' @importFrom stats fitted loess
 
 Smooth = function(X){
@@ -255,25 +255,25 @@ Smooth = function(X){
 }
 
 #' HiC Plot with Domain Smoothing
-#' 
+#'
 #' Creates a HiC heatmap displaying the fitted value of the test statistic smoothed
-#' within domains by pixel separation. 
-#' 
+#' within domains by pixel separation.
+#'
 #' @param B Data.table in the format (i,j,Signal)
 #' @param f Plot focus, numeric.
 #' @param h.u Length of upstream domain in pixels
 #' @param h.d Length of downstream domain in pixels
 #' @param l.u Lenght of upstream flank in pixels
 #' @param l.d Length of downstream flank in pixels
-#' @return List containing 1. the ggplot, 2. the minimal signal observed in the 
+#' @return List containing 1. the ggplot, 2. the minimal signal observed in the
 #'   plotting region, and 3. the maximal signal in the plotting region.
-#' 
+#'
 #' @import ggplot2
 #' @importFrom plyr llply
 #' @importFrom data.table data.table setkey
 
 smoothHicPlot = function(B,f,h.u,h.d,l.u,l.d){
-  
+
   ## 1. Foci for inclusion in heatmap
   # Upstream
   U = f-(h.u+l.u);
@@ -282,7 +282,7 @@ smoothHicPlot = function(B,f,h.u,h.d,l.u,l.d){
   # Foci
   Foci = seq(from=U,to=D);
   n = length(Foci);
-  
+
   ## 2. Coords of pixels in heatmap
   P = Pixels(Foci);
   ## Domain subdivisions
@@ -326,16 +326,16 @@ smoothHicPlot = function(B,f,h.u,h.d,l.u,l.d){
   if((h.d>0)&(l.d>0)){D8 = mExclusion(A=Pixels(seq(from=f+1,to=f+h.d+l.d))[,c(1:2)],B=D2)
     domains$D8 = D8;
   }
-  
+
   ## 3. Merge in Data
   aux = function(x){
     return(merge(x=x,y=B));
   }
   domains = plyr::llply(.data=domains,.fun=aux);
-  
+
   ## 4. Smooth Data
   domains = plyr::llply(.data=domains,.fun=Smooth);
-  
+
   ## 5. Merge into overall data.table
   id = NULL;
   aux = function(x){
@@ -344,15 +344,15 @@ smoothHicPlot = function(B,f,h.u,h.d,l.u,l.d){
   domains = plyr::llply(.data=domains,.fun=aux);
   df = do.call(rbind,domains);
   data.table::setkey(df,id);
-  
+
   # Signal Limits
   minSignal = min(df$fit);
   maxSignal = max(df$fit);
-  
+
   ## 6. Enumerate vertices of pixels in heatmap
   V = polyCoord(h.u,h.d,l.u,l.d);
   Vertices = V[["Vertices"]];
-  
+
   ## 4. Plotting
   # Merge HiC data into lattice
   df.p = merge(x=Vertices,y=df);
@@ -371,9 +371,9 @@ smoothHicPlot = function(B,f,h.u,h.d,l.u,l.d){
 ########################
 
 #' Plot HiC Statistic
-#' 
-#' Creates a heatmap displaying the value of a HiC statistic within each pixel. 
-#' 
+#'
+#' Creates a heatmap displaying the value of a HiC statistic within each pixel.
+#'
 #' @param In A \code{DCSexp} or \code{DCSchr} object.
 #' @param stat Name of statistic to plot. Should correspond with a column of
 #'   \code{DCSchr@Stats}.
@@ -384,9 +384,9 @@ smoothHicPlot = function(B,f,h.u,h.d,l.u,l.d){
 #' @param l.u Lenght of upstream flank in pixels
 #' @param l.d Length of downstream flank in pixels
 #' @param smooth Smooth signal against pixel separation \eqn{d}?
-#' @return List containing 1. the ggplot, 2. the minimal signal observed in the 
+#' @return List containing 1. the ggplot, 2. the minimal signal observed in the
 #'   plotting region, and 3. the maximal signal in the plotting region.
-#' 
+#'
 #' @import ggplot2
 #' @importFrom plyr llply
 #' @importFrom data.table data.table setkey
@@ -407,12 +407,12 @@ plotHicStat = function(In,stat,f,chr,h.u,h.d,l.u=0,l.d=0,smooth=F){
   if(!(f %in% A@Coord[,"i"])){stop("Focus not present on the chromosome.")};
   # Check statistic
   if(!(stat %in% colnames(A@Stats))){stop("Statistic not present for the chromosome.")};
-  
+
   # Plotting frame
   i = j = NULL;
   B = data.table::data.table(A@Coord[,c("i","j")],"Signal"=A@Stats[,stat]);
   data.table::setkey(x=B,i,j);
-  
+
   if(smooth){
     Q = smoothHicPlot(B=B,f=f,h.u=h.u,h.d=h.d,l.u=l.u,l.d=l.d)
   } else {
@@ -426,11 +426,11 @@ plotHicStat = function(In,stat,f,chr,h.u,h.d,l.u=0,l.d=0,smooth=F){
 ########################
 
 #' Plot Log HiC Signal
-#' 
-#' Creates a heatmap displaying the log of the HiC signal in each pixel. The 
+#'
+#' Creates a heatmap displaying the log of the HiC signal in each pixel. The
 #' plots are facetted by group. For groups with multiple samples, the mean
-#' signal is taken prior to the logarithm. 
-#' 
+#' signal is taken prior to the logarithm.
+#'
 #' @param In A \code{DCSexp} or \code{DCSchr} object.
 #' @param f Plot focus, numeric.
 #' @param chr Chromosome, if providing a \code{DCSexp}.
@@ -440,13 +440,13 @@ plotHicStat = function(In,stat,f,chr,h.u,h.d,l.u=0,l.d=0,smooth=F){
 #' @param l.d Length of downstream flank in pixels
 #' @param smooth Smooth signal against pixel separation \eqn{d}?
 #' @return List containing 1. the group facetted heatmaps, 2. a list of the
-#'   component plots, and 3. a data.frame containing the minimum and maximal 
+#'   component plots, and 3. a data.frame containing the minimum and maximal
 #'   signal within the plotting region for each group.
-#' 
+#'
 #' @import ggplot2
 #' @importFrom plyr llply
 #' @importFrom data.table data.table setkey
-#' @importFrom foreach "%do%" foreach 
+#' @importFrom foreach %do% foreach
 #' @export
 
 plotHicSignal = function(In,f,chr,h.u,h.d,l.u,l.d,smooth=F){
@@ -462,7 +462,7 @@ plotHicSignal = function(In,f,chr,h.u,h.d,l.u,l.d,smooth=F){
   } else {stop("DCSexp or DCSchr expected as input.")};
   # Check focus
   if(!(f %in% A@Coord[,"i"])){stop("Focus not present on the chromosome.")};
-  
+
   ## 1. Groups
   L = sort(unique(A@groups));
   ng = length(L);
@@ -484,7 +484,7 @@ plotHicSignal = function(In,f,chr,h.u,h.d,l.u,l.d,smooth=F){
     }
     return(Q);
   } # End loop over groups
-  
+
   ## Harmonize color scales
   signalScales = foreach(i=1:ng,.combine=rbind) %do% {
     return(c(G[[i]]$minSignal,G[[i]]$maxSignal))
@@ -493,7 +493,7 @@ plotHicSignal = function(In,f,chr,h.u,h.d,l.u,l.d,smooth=F){
   colnames(signalScales) = c("minSignal","maxSignal");
   rownames(signalScales) = NULL;
   signalScales$Group = L;
-  
+
   # Min Signal
   minSignal = min(signalScales[,1]);
   minSignal = floor(minSignal*100)/100;

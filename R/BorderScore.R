@@ -3,25 +3,25 @@ NULL
 
 # Purpose : Functions to calculate a border score for each focus in the genome.
 # Border scores compare the signal intensity in a candidate inter-TAD region with
-# the mean border score in the flanking regions. 
+# the mean border score in the flanking regions.
 
 #' Enumerate Inter-Tad Region
-#' 
-#' Enumerates pixels in an upper triangular window above a focus. Maximal 
-#' pixel separation d corresond to the base-width of the triangle in pixels. 
-#' Assuming the pixels are indexed (i,j) with i <= j, the lower bound l = min(i), 
-#' while the upper bound u = max(j). 
-#' @param f Focus. 
-#' @param d Maximum pixel separation. 
-#' @param l Lower bound on pixel indices. 
-#' @param u Upper bound on pixel indices.  
+#'
+#' Enumerates pixels in an upper triangular window above a focus. Maximal
+#' pixel separation d corresond to the base-width of the triangle in pixels.
+#' Assuming the pixels are indexed (i,j) with i <= j, the lower bound l = min(i),
+#' while the upper bound u = max(j).
+#' @param f Focus.
+#' @param d Maximum pixel separation.
+#' @param l Lower bound on pixel indices.
+#' @param u Upper bound on pixel indices.
 #' @importFrom plyr llply
 
 triCoord = function(f,d,l,u){
   # f : Focus
   # d : Max bin separation
   # u : Upper limit
-  
+
   # Function to enumerate coordinates (down columns);
   aux = function(z){
     if(f+z<=u){
@@ -38,15 +38,15 @@ triCoord = function(f,d,l,u){
 }
 
 #' Enumerate Upstream Intra-TAD Region
-#' 
-#' Enumerates pixels in an upper triangular window upstream of a focus. Maximal 
-#' pixel separation d corresond to the base-width of the triangle in pixels. 
-#' Assuming the pixels are indexed (i,j) with i <= j, the lower bound l = min(i), 
-#' while the upper bound u = max(j). 
-#' @param f Focus. 
-#' @param d Maximum pixel separation. 
-#' @param l Lower bound on pixel indices. 
-#' @param u Upper bound on pixel indices. 
+#'
+#' Enumerates pixels in an upper triangular window upstream of a focus. Maximal
+#' pixel separation d corresond to the base-width of the triangle in pixels.
+#' Assuming the pixels are indexed (i,j) with i <= j, the lower bound l = min(i),
+#' while the upper bound u = max(j).
+#' @param f Focus.
+#' @param d Maximum pixel separation.
+#' @param l Lower bound on pixel indices.
+#' @param u Upper bound on pixel indices.
 #' @importFrom plyr llply
 
 triCoordLeft = function(f,d,l,u){
@@ -54,7 +54,7 @@ triCoordLeft = function(f,d,l,u){
   # r : Resolution
   # d : Max bin separation
   # u : Upper limit
-  
+
   # Upper left coord of region
   UL = max(l,f-d-1);
   # Function to enumerate coordinates (down columns);
@@ -73,15 +73,15 @@ triCoordLeft = function(f,d,l,u){
 }
 
 #' Enumerate Downstream Intra-TAD Region
-#' 
-#' Enumerates pixels in an upper triangular window downstream of a focus. Maximal 
-#' pixel separation d corresond to the base-width of the triangle in pixels. 
-#' Assuming the pixels are indexed (i,j) with i <= j, the lower bound l = min(i), 
-#' while the upper bound u = max(j). 
-#' @param f Focus. 
-#' @param d Maximum pixel separation. 
-#' @param l Lower bound on pixel indices. 
-#' @param u Upper bound on pixel indices.  
+#'
+#' Enumerates pixels in an upper triangular window downstream of a focus. Maximal
+#' pixel separation d corresond to the base-width of the triangle in pixels.
+#' Assuming the pixels are indexed (i,j) with i <= j, the lower bound l = min(i),
+#' while the upper bound u = max(j).
+#' @param f Focus.
+#' @param d Maximum pixel separation.
+#' @param l Lower bound on pixel indices.
+#' @param u Upper bound on pixel indices.
 #' @importFrom plyr llply
 
 triCoordRight = function(f,d,l,u){
@@ -103,21 +103,21 @@ triCoordRight = function(f,d,l,u){
 }
 
 #' Chromosome-level Border Score Calculation
-#' 
+#'
 #' For each focus, aggregates signal in the inter-TAD region, and within the
-#' upstream and downstream intra-TAD regions. Calculates a border score as the 
+#' upstream and downstream intra-TAD regions. Calculates a border score as the
 #' ratio of mean signal in the intra-TAD regions to mean signal in the inter-TAD region.
 #' @param G Chromosome level data structured as (i,j,groupMean)
 #' @param agg FUNCTION for signal aggregation within each region. Defaults to sum.
 #' @return A matrix containing the focus, region summary statistics, and the border
-#' score. Regions (A,B,C) refer to the upstream, downstream, and inter-TAD regions 
-#' respectively. Signal is the aggregated signal in the region. Pixels is the total 
-#' number of pixels in the region, and prop is the proportion of pixels which 
-#' were populated. 
+#' score. Regions (A,B,C) refer to the upstream, downstream, and inter-TAD regions
+#' respectively. Signal is the aggregated signal in the region. Pixels is the total
+#' number of pixels in the region, and prop is the proportion of pixels which
+#' were populated.
 #' @importFrom plyr alply
 
 chrBorderScore = function(G,agg=sum){
-  
+
   # Restrict to positions where i = j
   Foci = G[G[,"i"]==G[,"j"],];
   # Upper limit
@@ -178,10 +178,10 @@ chrBorderScore = function(G,agg=sum){
 };
 
 #' Wrapper Function for Chromosome-level Border Score Calculation
-#' 
+#'
 #' @param A Chromosome-level data from HiC experiment.
 #' @param agg FUNCTION for signal aggregation within each region. Defaults to sum.
-#' @importFrom foreach "%do%" foreach
+#' @importFrom foreach %do% foreach
 
 borderWrap = function(A,agg=sum){
   # Samples
@@ -192,7 +192,7 @@ borderWrap = function(A,agg=sum){
   L = sort(unique(g));
   ng = length(L);
   # Foci
-  i = j = NULL; 
+  i = j = NULL;
   foci = A@Coord[A@Coord[,"i"]==A@Coord[,"j"],"i"];
   # Loop over groups
   B = foreach(i=1:ng) %do% {
@@ -219,18 +219,18 @@ borderWrap = function(A,agg=sum){
 };
 
 #' Experiment-level Border Score Calculation
-#' 
-#' Calculates a border scores by comparing the mean pixel intensity in 
-#' triangular windows upstream and downstream of the focus to the mean pixel 
+#'
+#' Calculates a border scores by comparing the mean pixel intensity in
+#' triangular windows upstream and downstream of the focus to the mean pixel
 #' intensity in the intervening region.
-#' 
+#'
 #' minPix refers to the minimum number of pixels observed in one of the
 #' aggregation regions. minProp refers to the minimum proportion of pixels
 #' observed in one of the aggregation regions.
-#' 
+#'
 #' @param X HiC experiment.
-#' @param agg Function used to aggregate signal within each region. 
-#' @param parallel Run in parallel? Must register parallel backend first. 
+#' @param agg Function used to aggregate signal within each region.
+#' @param parallel Run in parallel? Must register parallel backend first.
 #' @return Returns a list with one data.frame per group.
 #' @importFrom methods new
 #' @export
